@@ -11,7 +11,10 @@ from .serializers import HealthRecordSerializer
 @permission_classes([IsAuthenticated])
 def get_health_records(request):
     user = request.user
-    health_records = HealthRecord.objects.filter(user=user)
+    if request.user.is_superuser:
+        health_records = HealthRecord.objects.all()
+    else:
+        health_records = HealthRecord.objects.filter(user=user)
     serializer = HealthRecordSerializer(health_records, many=True)
     return Response(serializer.data)
 
